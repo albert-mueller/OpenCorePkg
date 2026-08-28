@@ -41,6 +41,7 @@
   UefiCpuPkg/UefiCpuPkg.dec
 
 [Guids]
+  gAppleVendorVariableGuid
   gEfiMdeModulePkgTokenSpaceGuid
   gOcVendorVariableGuid
 

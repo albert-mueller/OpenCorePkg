@@ -214,6 +214,21 @@ OcLoadNvramSupport (
   );
 
 /**
+  Check whether genuine bridgeOS/T2 coprocessor hardware was detected before
+  any OpenCore NVRAM or Apple Secure Boot code has run. Must only be called
+  after OcLoadNvramSupport, which performs the detection.
+
+  @retval TRUE   A pre-existing BridgeOSHardwareModel NVRAM variable was
+                 found before OpenCore wrote anything, indicating genuine
+                 coprocessor hardware.
+  @retval FALSE  No genuine coprocessor detected (e.g. Hackintosh).
+**/
+BOOLEAN
+OcHasGenuineCoprocessor (
+  VOID
+  );
+
+/**
   Obtain Legacy Secure Boot ECID (system-id).
 
   @param[in]  Config   Configuration.

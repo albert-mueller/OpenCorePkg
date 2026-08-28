@@ -79,6 +79,7 @@ OcPlatformUpdateDataHub (
   EFI_GUID               Uuid;
   UINT64                 StartupPowerEvents;
   UINT64                 InitialTSC;
+  UINT32                 CoprocessorVersion;
   EFI_DATA_HUB_PROTOCOL  *DataHub;
 
   DataHub = OcDataHubInstallProtocol (FALSE);
@@ -189,6 +190,18 @@ OcPlatformUpdateDataHub (
     Data.SmcRevision = &MacInfo->DataHub.SmcRevision[0];
     Data.SmcBranch   = &MacInfo->DataHub.SmcBranch[0];
     Data.SmcPlatform = &MacInfo->DataHub.SmcPlatform[0];
+  }
+
+  //
+  // CoprocessorVersion is otherwise left unset (see UpdateDataHub), since
+  // reporting a v2 coprocessor without real coprocessor hardware present
+  // is known to break Recovery OS booting. Only report it when OcLoadNvramSupport
+  // detected a genuine, pre-existing BridgeOSHardwareModel variable, i.e. real
+  // T2 hardware.
+  //
+  if (OcHasGenuineCoprocessor ()) {
+    CoprocessorVersion      = 0x20000;
+    Data.CoprocessorVersion = &CoprocessorVersion;
   }
 
   Status = UpdateDataHub (DataHub, &Data, CpuInfo);
