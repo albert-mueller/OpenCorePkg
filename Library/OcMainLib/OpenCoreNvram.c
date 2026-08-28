@@ -14,7 +14,6 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 #include <Library/OcMainLib.h>
 
-#include <Guid/AppleVariable.h>
 #include <Guid/OcVariable.h>
 
 #include <Library/BaseLib.h>
@@ -23,51 +22,6 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 #include <Library/OcVariableLib.h>
 #include <Library/UefiLib.h>
 #include <Library/UefiRuntimeServicesTableLib.h>
-
-//
-// Set by OcDetectGenuineCoprocessor, sampled before OpenCore has written
-// any NVRAM variables of its own (in particular before OcLoadUefiSupport,
-// which -- only when Apple Secure Boot is enabled -- writes a synthetic
-// BridgeOSHardwareModel of its own via OcAppleSecureBootBootstrapValues).
-// A pre-existing value at this point can therefore only come from genuine
-// bridgeOS, i.e. real T2 hardware.
-//
-STATIC BOOLEAN  mOcGenuineCoprocessorPresent = FALSE;
-
-BOOLEAN
-OcHasGenuineCoprocessor (
-  VOID
-  )
-{
-  return mOcGenuineCoprocessorPresent;
-}
-
-STATIC
-VOID
-OcDetectGenuineCoprocessor (
-  VOID
-  )
-{
-  EFI_STATUS  Status;
-  UINTN       VariableSize;
-
-  VariableSize = 0;
-  Status       = gRT->GetVariable (
-                        APPLE_BRIDGE_OS_HARDWARE_MODEL_VARIABLE_NAME,
-                        &gAppleVendorVariableGuid,
-                        NULL,
-                        &VariableSize,
-                        NULL
-                        );
-
-  mOcGenuineCoprocessorPresent = (Status == EFI_BUFFER_TOO_SMALL) && (VariableSize > 0);
-
-  DEBUG ((
-    DEBUG_INFO,
-    "OC: Genuine coprocessor (bridgeOS) detected - %d\n",
-    mOcGenuineCoprocessorPresent
-    ));
-}
 
 STATIC
 VOID
@@ -255,8 +209,6 @@ OcLoadNvramSupport (
   IN OC_GLOBAL_CONFIG    *Config
   )
 {
-  OcDetectGenuineCoprocessor ();
-
   OcLoadLegacyNvram (
     Storage,
     &Config->Nvram.Legacy,
