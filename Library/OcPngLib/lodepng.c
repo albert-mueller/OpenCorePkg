@@ -4729,9 +4729,9 @@ static unsigned postProcessScanlines(unsigned char* out, unsigned char* in,
   if(bpp == 0) return 31; /*error: invalid colortype*/
 
   if(info_png->interlace_method == 0) {
-    if(bpp < 8 && w * bpp != ((w * bpp + 7u) / 8u) * 8u) {
+    if(bpp < 8 && ((size_t)w) * bpp != ((((size_t)w) * bpp + 7u) / 8u) * 8u) {
       CERROR_TRY_RETURN(unfilter(in, in, w, h, bpp));
-      removePaddingBits(out, in, w * bpp, ((w * bpp + 7u) / 8u) * 8u, h);
+      removePaddingBits(out, in, ((size_t)w) * bpp, ((((size_t)w) * bpp + 7u) / 8u) * 8u, h);
     }
     /*we can immediately filter into the out buffer, no other steps needed*/
     else CERROR_TRY_RETURN(unfilter(out, in, w, h, bpp));
@@ -4748,8 +4748,8 @@ static unsigned postProcessScanlines(unsigned char* out, unsigned char* in,
       if(bpp < 8) {
         /*remove padding bits in scanlines; after this there still may be padding
         bits between the different reduced images: each reduced image still starts nicely at a byte*/
-        removePaddingBits(&in[passstart[i]], &in[padded_passstart[i]], passw[i] * bpp,
-                          ((passw[i] * bpp + 7u) / 8u) * 8u, passh[i]);
+        removePaddingBits(&in[passstart[i]], &in[padded_passstart[i]], ((size_t)passw[i]) * bpp,
+                          ((((size_t)passw[i]) * bpp + 7u) / 8u) * 8u, passh[i]);
       }
     }
 
