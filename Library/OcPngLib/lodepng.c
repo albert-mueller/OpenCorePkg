@@ -4748,7 +4748,7 @@ static unsigned postProcessScanlines(unsigned char* out, unsigned char* in,
       if(bpp < 8) {
         /*remove padding bits in scanlines; after this there still may be padding
         bits between the different reduced images: each reduced image still starts nicely at a byte*/
-        removePaddingBits(&in[passstart[i]], &in[padded_passstart[i]], passw[i] * bpp,
+        removePaddingBits(&in[passstart[i]], &in[padded_passstart[i]], ((size_t)passw[i]) * bpp,
                           ((passw[i] * bpp + 7u) / 8u) * 8u, passh[i]);
       }
     }
